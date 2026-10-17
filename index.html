@@ -358,7 +358,7 @@ table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:12px 13p
 </section>
 
 <section class="view" id="cashbank">
-  <div class="sectionHead"><h2>Cash & Bank Accounts</h2><div class="actions"><button class="btn green" onclick="openCashReceiptForm()">＋ Member Cash Receipt</button><button class="btn blue" onclick="openCashEntryForm('Withdrawal')">＋ Cash / Bank Payment</button><button class="btn gray" onclick="openCashTransferForm()">⇄ Bank Cash</button><button class="btn gray" onclick="printCashBankStatement()">🖨 Print / PDF</button><button class="btn green" onclick="exportCashBankExcel()">📊 Export Excel</button></div></div>
+  <div class="sectionHead"><h2>Cash & Bank Accounts</h2><div class="actions"><button class="btn green" onclick="openCashReceiptForm()">＋ Record Member Payment / Deposit</button><button class="btn blue" onclick="openCashEntryForm('Withdrawal')">＋ Cash / Bank Payment</button><button class="btn gray" onclick="openCashTransferForm()">⇄ Bank Cash</button><button class="btn gray" onclick="printCashBankStatement()">🖨 Print / PDF</button><button class="btn green" onclick="exportCashBankExcel()">📊 Export Excel</button></div></div>
   <div class="panel" style="margin-bottom:15px"><b>Collection flow:</b> Member payments are first recorded in <b>Cash Collection</b>. When cash is taken to the bank, use <b>Bank Cash</b> to transfer it from Cash to Bank. Payments and other money going out reduce the selected account.</div>
   <div class="cashCards"><div class="accountCard"><div class="small">CASH COLLECTION</div><div class="big" id="cashBalance">UGX 0</div></div><div class="accountCard"><div class="small">BANK ACCOUNT</div><div class="big" id="bankBalance">UGX 0</div></div></div>
   <div id="cashBankSummary" class="statementHint"><b>Accounting view:</b> use the date and account filters to review the complete Cash/Bank history. The report shows opening balance, period receipts/payments, running balance and closing balance.</div>
@@ -368,7 +368,7 @@ table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:12px 13p
     <div class="field"><label>To Date</label><input id="cashBankTo" type="date"></div>
     <div class="field"><button class="btn blue" style="width:100%" onclick="renderCashBank()">Apply History Filter</button></div>
   </div>
-  <div class="tableWrap"><table><thead><tr><th>Date</th><th>Account</th><th>Entry</th><th>Amount</th><th>Member / Reference</th><th>Running Balance</th><th>Note</th><th>Action</th></tr></thead><tbody id="cashBankTable"></tbody></table></div>
+  <div class="tableWrap"><table aria-label="Cash and bank ledger, newest transaction date first"><thead><tr><th>Date</th><th>Account</th><th>Entry</th><th>Amount</th><th>Member / Reference</th><th>Running Balance</th><th>Note</th><th>Action</th></tr></thead><tbody id="cashBankTable"></tbody></table></div>
 </section>
 
 <section class="view" id="reports">
@@ -829,6 +829,41 @@ function reportWindow(c,data){const w=window.open('','_blank','width=1100,height
   };
 })();
 <\/script>
+
+<style id="mazima-requested-layout-tidy">
+/* Keep the combined member-payment entry point only in the Cash & Bank header. */
+#mazimaMemberReceiptShortcut{display:none!important}
+#cashbank .sectionHead .actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#cashbank .sectionHead .actions .btn{padding:7px 10px;font-size:12px;line-height:1.25;border-radius:7px}
+/* Compact dashboard cards and buttons without changing their content or behavior. */
+#dashboard .cards{gap:10px}
+#dashboard .cards .card{padding:12px 13px;border-radius:11px;min-height:0}
+#dashboard .cards .card .icon{font-size:20px;margin-bottom:4px}
+#dashboard .cards .card .label{font-size:12px;line-height:1.25}
+#dashboard .cards .card .value{font-size:clamp(18px,2vw,25px);line-height:1.2;margin:5px 0}
+#dashboard .cards .card .note{font-size:11px;line-height:1.3}
+#dashboard .cards .card .btn,#dashboard .btn{padding:7px 10px;font-size:12px;line-height:1.25;border-radius:7px}
+@media(max-width:700px){#dashboard .cards{gap:7px}#dashboard .cards .card{padding:9px}#dashboard .cards .card .value{font-size:18px}}
+</style>
+
+
+<style id="mazima-cashbook-fit-screen-surgical">
+/* Surgical layout-only override: preserve cashbook columns/features while fitting the viewport. */
+#cashBankTable { width:100%; }
+table:has(#cashBankTable) { width:100% !important; max-width:100% !important; table-layout:fixed !important; }
+table:has(#cashBankTable) th, table:has(#cashBankTable) td { box-sizing:border-box; padding:6px 5px !important; font-size:clamp(10px,0.78vw,12px) !important; white-space:normal !important; overflow-wrap:anywhere; word-break:normal; vertical-align:top; }
+table:has(#cashBankTable) th:nth-child(1), table:has(#cashBankTable) td:nth-child(1) {width:6%}
+table:has(#cashBankTable) th:nth-child(2), table:has(#cashBankTable) td:nth-child(2) {width:10%}
+table:has(#cashBankTable) th:nth-child(3), table:has(#cashBankTable) td:nth-child(3) {width:10%}
+table:has(#cashBankTable) th:nth-child(4), table:has(#cashBankTable) td:nth-child(4) {width:15%}
+table:has(#cashBankTable) th:nth-child(5), table:has(#cashBankTable) td:nth-child(5), table:has(#cashBankTable) th:nth-child(6), table:has(#cashBankTable) td:nth-child(6) {width:12%}
+table:has(#cashBankTable) th:nth-child(7), table:has(#cashBankTable) td:nth-child(7) {width:12%}
+table:has(#cashBankTable) th:nth-child(8), table:has(#cashBankTable) td:nth-child(8) {width:13%}
+table:has(#cashBankTable) th:nth-child(9), table:has(#cashBankTable) td:nth-child(9) {width:10%}
+table:has(#cashBankTable) td .btn {font-size:10px !important; padding:4px 6px !important; margin:2px 0 !important; white-space:normal !important; max-width:100%;}
+@media (max-width:1100px) { table:has(#cashBankTable) th:nth-child(8), table:has(#cashBankTable) td:nth-child(8) {display:none;} table:has(#cashBankTable) th:nth-child(1),table:has(#cashBankTable) td:nth-child(1){width:7%} table:has(#cashBankTable) th:nth-child(2),table:has(#cashBankTable) td:nth-child(2){width:11%} table:has(#cashBankTable) th:nth-child(3),table:has(#cashBankTable) td:nth-child(3){width:11%} table:has(#cashBankTable) th:nth-child(4),table:has(#cashBankTable) td:nth-child(4){width:18%} table:has(#cashBankTable) th:nth-child(5),table:has(#cashBankTable) td:nth-child(5),table:has(#cashBankTable) th:nth-child(6),table:has(#cashBankTable) td:nth-child(6){width:14%} table:has(#cashBankTable) th:nth-child(7),table:has(#cashBankTable) td:nth-child(7){width:14%} table:has(#cashBankTable) th:nth-child(9),table:has(#cashBankTable) td:nth-child(9){width:11%} }
+@media (max-width:760px) { table:has(#cashBankTable) th,table:has(#cashBankTable) td {padding:4px 3px !important;font-size:10px !important;} table:has(#cashBankTable) th:nth-child(1),table:has(#cashBankTable) td:nth-child(1),table:has(#cashBankTable) th:nth-child(3),table:has(#cashBankTable) td:nth-child(3){display:none;} }
+</style>
 </body></html>`);w.document.close()}
 function printSelectedReport(){if(currentRole!=='Chairperson')return showToast('Only the Chairperson can print general reports.');const c=reportConfig();reportWindow(c,reportData())}
 function exportSelectedReportPDF(){if(currentRole!=='Chairperson')return showToast('Only the Chairperson can export reports.');showToast('PDF export opened. Choose “Save as PDF” in the print dialog.');const c=reportConfig();reportWindow(c,reportData())}
@@ -1898,7 +1933,7 @@ async function loadOnlineDB(){
     db.logs=(a.data||[]).map(x=>({time:x.time,user:x.user_id||'Online',action:x.action,details:x.details||''}));
     const st=s.data||{};db.settings={...DEFAULT_DB.settings,shareValue:Number(st.share_value||5000),maxShares:Number(st.max_shares||10),mengoShareValue:Number(st.mengo_share_value||5000),maxMengoShares:Number(st.max_mengo_shares||9999),savingDay:'Friday',logo:st.logo_url||'',dashboardImage:st.dashboard_image_url||''};
     db.cashBankAccounts=(ca.data||[]).map(x=>({id:x.id,account_type:x.account_type,name:x.name,balance:Number(x.balance||0)}));
-    db.cashBankEntries=(ce.data||[]).map(x=>({id:x.id,account_id:x.account_id,entry_type:x.entry_type,amount:Number(x.amount||0),date:x.date,note:x.note||'',member_id:x.member_id||null,related_transaction_id:x.related_transaction_id||null,related_repayment_id:x.related_repayment_id||null,user_id:x.user_id||null,reversed:!!x.reversed,reversed_at:x.reversed_at||null,reversal_reason:x.reversal_reason||'',reversal_of:x.reversal_of||null}));
+    db.cashBankEntries=(ce.data||[]).map(x=>({id:x.id,account_id:x.account_id,entry_type:x.entry_type,amount:Number(x.amount||0),date:x.date,note:x.note||'',member_id:x.member_id||null,related_transaction_id:x.related_transaction_id||null,related_repayment_id:x.related_repayment_id||null,user_id:x.user_id||null,created_at:x.created_at||x.posted_at||null,reversed:!!x.reversed,reversed_at:x.reversed_at||null,reversal_reason:x.reversal_reason||'',reversal_of:x.reversal_of||null}));
   }catch(err){console.error(err);showToast('Could not load online data: '+(err.message||err));}
 }
 async function upsertAllOnline(){
@@ -2608,5 +2643,127 @@ window.saveSaccoExpenditure=async function(){
 })();
 
 </script>
+
+<style id="mazima-audit-upgrade">
+#cashBankTable th,#cashBankTable td{white-space:nowrap}
+.cashDebit{color:#147b38;font-weight:800}.cashCredit{color:#b51f1f;font-weight:800}
+.auditNote{background:#fff8df;border:1px solid #efd68b;border-radius:10px;padding:11px;margin:10px 0;font-size:12px;color:#654d12}
+.reconGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.reconCell{background:#f5f9fb;border:1px solid #dce8ed;border-radius:10px;padding:10px}.reconCell small{display:block;color:#607d86}.reconCell b{display:block;margin-top:5px;font-size:16px}
+@media(max-width:700px){.reconGrid{grid-template-columns:1fr 1fr}}
+</style>
+<script id="mazima-v22-surgical-upgrade">
+(function(){
+  // Presentation-only rename. The stored transaction type remains unchanged for backward compatibility.
+  function renameVisibleText(root){
+    if(!root)return;
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement&&n.parentElement.closest('script,style')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});let n;
+    while((n=walker.nextNode())) if(n.nodeValue&&n.nodeValue.includes('Bigwabitalaze')) n.nodeValue=n.nodeValue.replace(/Bigwabitalaze/g,'Muno Mukabi');
+    if(root.querySelectorAll) root.querySelectorAll('[title],[aria-label]').forEach(el=>{['title','aria-label'].forEach(a=>{if(el.hasAttribute(a))el.setAttribute(a,el.getAttribute(a).replace(/Bigwabitalaze/g,'Muno Mukabi'))})});
+  }
+  renameVisibleText(document.body);
+  // Floating payment shortcut intentionally removed; use the Cash & Bank header button.
+  const renameObserver=new MutationObserver(ms=>ms.forEach(m=>{if(m.type==='childList')m.addedNodes.forEach(n=>{if(n.nodeType===Node.TEXT_NODE){if(n.nodeValue.includes('Bigwabitalaze'))n.nodeValue=n.nodeValue.replace(/Bigwabitalaze/g,'Muno Mukabi')}else if(n.nodeType===Node.ELEMENT_NODE)renameVisibleText(n)});else if(m.type==='characterData'&&!(m.target.parentElement&&m.target.parentElement.closest('script,style'))&&m.target.nodeValue.includes('Bigwabitalaze'))m.target.nodeValue=m.target.nodeValue.replace(/Bigwabitalaze/g,'Muno Mukabi')}));
+  renameObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
+
+  // A combined member receipt form: one workflow records the member account deposit and matching cash receipt.
+  window.openCashReceiptForm=function(){
+    if(currentRole!=='Chairperson'&&currentRole!=='Treasurer')return showToast('Only Chairperson or Treasurer can record member receipts.');
+    if(!cashAccount('Cash'))return showToast('Cash Collection account is not available.');
+    if(!db.members.length)return showToast('Register a member first.');
+    const accountOptions=[['Savings','Savings'],['Shares','Ordinary Shares'],['Mengo Shares','Mengo Shares'],['Bigwabitalaze','Muno Mukabi'],['Others','Others']];
+    openModal(`<h2>Combined Member Receipt & Deposit</h2><p class="muted">Enter the receipt once. The member account and Cash Collection will be posted together. Loan repayments remain in the dedicated Repay Loan workflow.</p><div class="form" style="box-shadow:none;padding:0"><div class="field full"><label>Member</label><select id="cashMember">${db.members.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select></div><div class="field"><label>Credit member account</label><select id="cashMemberAccount">${accountOptions.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}</select></div><div class="field"><label>Amount (UGX)</label><input id="cashReceiptAmount" type="number" min="1" step="0.01"></div><div class="field"><label>Receipt date</label><input id="cashReceiptDate" type="date" value="${isoLocalDate(new Date())}"></div><div class="field"><label>Receipt / reference number</label><input id="cashReceiptRef" placeholder="Optional receipt number"></div><div class="field full"><label>Note / purpose</label><input id="cashReceiptNote" placeholder="e.g. weekly savings, shares or contribution"></div><div class="field full auditNote">This form is for money actually received into Cash Collection. For bank deposits use Bank Cash; for loan repayments use the loan repayment form so the loan balance is updated correctly.</div><div class="field full"><button id="combinedReceiptSave" class="btn green" style="width:100%" onclick="saveCombinedMemberReceipt()">Save Member Receipt & Account Deposit</button></div></div>`);
+  };
+  window.saveCombinedMemberReceipt=async function(){
+    if(!ensureOnline('record a combined member receipt'))return;
+    if(currentRole!=='Chairperson'&&currentRole!=='Treasurer')return showToast('Only Chairperson or Treasurer can record member receipts.');
+    const memberId=document.getElementById('cashMember')?.value,type=document.getElementById('cashMemberAccount')?.value,amount=Math.round(Number(document.getElementById('cashReceiptAmount')?.value||0)*100)/100,date=document.getElementById('cashReceiptDate')?.value,noteParts=[document.getElementById('cashReceiptRef')?.value?.trim(),document.getElementById('cashReceiptNote')?.value?.trim()].filter(Boolean),note=noteParts.join(' — '),acct=cashAccount('Cash');
+    if(!memberId||!type||!acct||amount<=0||!date)return showToast('Complete the member, account, amount and date fields.');
+    if((type==='Shares'||type==='Mengo Shares')&&!isFriday(date))return showToast('Shares can only be recorded on Friday.');
+    const t={id:uid(),memberId,type,kind:'deposit',amount,date,note,qty:null,source:'Combined member cash receipt'};
+    if(type==='Shares'||type==='Mengo Shares'){
+      const qty=amount/(type==='Shares'?Number(db.settings.shareValue||5000):Number(db.settings.mengoShareValue||5000));
+      if(!Number.isInteger(qty)||qty<1)return showToast('For share receipts, amount must equal a whole number of shares at the configured share value.');
+      const max=type==='Shares'?Number(db.settings.maxShares||10):Number(db.settings.maxMengoShares||9999);
+      if(qty>max)return showToast('The share quantity exceeds the configured maximum.');t.qty=qty;
+    }
+    const btn=document.getElementById('combinedReceiptSave');if(btn){btn.disabled=true;btn.textContent='Saving…'}
+    try{
+      const {error:txError}=await supabaseClient.from('transactions').insert({id:t.id,member_id:memberId,type,kind:'deposit',amount,qty:t.qty||null,date,note:note||null,source:t.source,user_id:onlineUser?.id||null});
+      if(txError)throw txError;
+      const {error:cashError}=await supabaseClient.rpc('record_cash_bank_entry',{p_account_id:acct.id,p_entry_type:'Deposit',p_amount:amount,p_date:date,p_note:note||('Member receipt — '+type),p_member_id:memberId,p_related_transaction_id:t.id});
+      if(cashError){const rollback=await supabaseClient.from('transactions').delete().eq('id',t.id);if(rollback.error)throw new Error('Cashbook posting failed and automatic rollback of the member transaction also failed. Check both records before retrying. Cashbook error: '+cashError.message);throw new Error('Cashbook posting failed; the member transaction was rolled back. '+cashError.message)}
+      closeModal();await refreshOnlineData();if(typeof renderAll==='function')renderAll();showToast('Receipt and member account deposit recorded successfully.');
+    }catch(e){if(btn){btn.disabled=false;btn.textContent='Save Member Receipt & Account Deposit'}showToast(e.message||'Receipt could not be saved.');}
+  };
+
+  // Cashbook uses a stable posting order (created_at when available, otherwise date and ID).
+  window.renderCashBank=function(){
+    const c=cashAccount('Cash'),b=cashAccount('Bank'),set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=money(v)};set('cashBalance',Number(c?.balance||0));set('bankBalance',Number(b?.balance||0));
+    setDateDefaults('cashBankFrom','cashBankTo');const from=document.getElementById('cashBankFrom')?.value||'1900-01-01',to=document.getElementById('cashBankTo')?.value||isoLocalDate(new Date()),acct=document.getElementById('cashBankFilterAccount')?.value||'all';
+    const stamp=e=>{const v=e.created_at||e.posted_at||e.createdAt||e.postedAt;return v?String(v):String(e.id||'')};
+    // Calculate balances in chronological order, then show the newest transaction date first.
+    const all=[...(db.cashBankEntries||[])].sort((a,b)=>{const d=String(a.date||'').slice(0,10).localeCompare(String(b.date||'').slice(0,10));return d||(stamp(a).localeCompare(stamp(b)))||String(a.id||'').localeCompare(String(b.id||''))});
+    const byAccount=e=>{const a=cashAccount(e.account_id||e.accountId);return acct==='all'||a?.account_type===acct};
+    const opening={Cash:0,Bank:0};all.filter(e=>String(e.date||'').slice(0,10)<from).forEach(e=>{const a=cashAccount(e.account_id||e.accountId);if(a&&opening[a.account_type]!==undefined)opening[a.account_type]+=(e.entry_type==='Withdrawal'?-1:1)*Number(e.amount||0)});
+    const running={Cash:opening.Cash,Bank:opening.Bank};const chronological=all.filter(e=>byAccount(e)&&String(e.date||'').slice(0,10)>=from&&String(e.date||'').slice(0,10)<=to).map((e,i)=>{const a=cashAccount(e.account_id||e.accountId),key=a?.account_type||'Cash',amount=Number(e.amount||0);running[key]=(running[key]||0)+(e.entry_type==='Withdrawal'?-amount:amount);return {e,a,amount,r:running[key],seq:i+1}});const rows=chronological.reverse();
+    const tb=document.getElementById('cashBankTable');if(!tb)return;
+    const table=tb.closest('table');if(table){const head=table.querySelector('thead tr');if(head)head.innerHTML='<th>Posting #</th><th>Date</th><th>Account</th><th>Particulars / Member</th><th>Debit — Receipt</th><th>Credit — Payment</th><th>Running Balance</th><th>Reference / Note</th><th>Action</th>';}
+    tb.innerHTML=rows.length?rows.map(x=>{const e=x.e,receipt=e.entry_type!=='Withdrawal',linked=!!(e.related_transaction_id||e.related_repayment_id);return `<tr><td>${x.seq}</td><td>${esc(isoLocalDate(e.date))}</td><td>${esc(x.a?.name||x.a?.account_type||'—')}</td><td>${esc(e.member_id?memberName(e.member_id):(e.note||'—'))}</td><td class="cashDebit">${receipt?money(x.amount):'—'}</td><td class="cashCredit">${receipt?'—':money(x.amount)}</td><td><b>${money(x.r)}</b></td><td>${esc(e.note||'—')}<br><small>${esc(String(e.id||'').slice(0,12))}</small></td><td>${e.reversed?'<span class="badge reversed">REVERSED</span>':`<button class="btn orange" style="background:#ef8413" onclick="reverseCashBankEntry('${e.id}')">↩ Reverse</button>`}${currentRole==='Chairperson'?` <button class="btn red" onclick="hardDeleteCashBankEntry('${e.id}')">Hard Delete</button>`:''}${linked?'<small class="muted">Linked record</small>':''}</td></tr>`}).join(''):`<tr><td colspan="9" class="empty">No cash/bank activity in the selected period.</td></tr>`;
+    const summary=document.getElementById('cashBankSummary');if(summary){const cards=(acct==='all'?[c,b].filter(Boolean):[c,b].filter(a=>a&&(a.account_type===acct))).map(a=>{const list=rows.filter(x=>(x.e.account_id||x.e.accountId)===a.id),receipts=list.filter(x=>x.e.entry_type!=='Withdrawal').reduce((n,x)=>n+x.amount,0),payments=list.filter(x=>x.e.entry_type==='Withdrawal').reduce((n,x)=>n+x.amount,0),openingBal=opening[a.account_type]||0;return `<span class="reportTotal"><b>${esc(a.name||a.account_type)}</b><br>Opening: ${money(openingBal)} &nbsp; Debit / Receipts: ${money(receipts)} &nbsp; Credit / Payments: ${money(payments)} &nbsp; Closing: ${money(openingBal+receipts-payments)}</span>`}).join('');summary.innerHTML=`<b>Cashbook — debit/credit format.</b> Receipts increase cash (Debit); payments reduce cash (Credit). Posting sequence follows creation/posting order where available, not merely the backdated transaction date. <div class="reportTotals">${cards}</div>`;}
+  };
+  window.hardDeleteCashBankEntry=async function(id){
+    if(currentRole!=='Chairperson')return showToast('Only the Chairperson can permanently delete cashbook entries.');
+    const e=(db.cashBankEntries||[]).find(x=>String(x.id)===String(id));
+    if(!e)return showToast('Cashbook entry not found. Refresh the Cash & Bank ledger and try again.');
+    const reason=prompt('Reason for permanent deletion (required), e.g. duplicate caused by network delay:');
+    if(!reason||!reason.trim())return showToast('Enter a deletion reason; nothing was deleted.');
+    if(!confirm('PERMANENTLY DELETE the selected cashbook transaction of '+money(e.amount)+' dated '+isoLocalDate(e.date)+'? Its linked member transaction or loan repayment will also be removed where applicable. This cannot be undone.'))return;
+    if(!ensureOnline('permanently delete a cashbook transaction'))return;
+    try{
+      // Remove notification rows first because they may reference the member transaction.
+      if(e.related_transaction_id){
+        const notices=await supabaseClient.from('notification_messages').delete().eq('related_payment_id',e.related_transaction_id);
+        if(notices.error && !/does not exist|schema cache|relation .* not found/i.test(notices.error.message||''))throw new Error('Could not clear linked notification records: '+notices.error.message);
+      }
+      // Delete the cashbook child row first so its foreign keys cannot prevent deletion of linked records.
+      const cash=await supabaseClient.from('cash_bank_entries').delete().eq('id',id);
+      if(cash.error)throw new Error('Cashbook transaction was not deleted: '+cash.error.message);
+      if(e.related_transaction_id){
+        const tx=await supabaseClient.from('transactions').delete().eq('id',e.related_transaction_id);
+        if(tx.error)throw new Error('Cashbook row was removed, but linked member transaction '+e.related_transaction_id+' remains: '+tx.error.message+'. Refresh the member ledger and check this transaction.');
+      }
+      if(e.related_repayment_id){
+        const linked=(db.loans||[]).flatMap(l=>(l.repayments||[]).map(r=>({loan:l,repayment:r}))).find(x=>String(x.repayment.id)===String(e.related_repayment_id));
+        const rep=await supabaseClient.from('loan_repayments').delete().eq('id',e.related_repayment_id);
+        if(rep.error)throw new Error('Cashbook row was removed, but linked loan repayment '+e.related_repayment_id+' remains: '+rep.error.message+'. Check the loan repayment ledger.');
+        if(linked){
+          const loan=linked.loan,amount=Number(linked.repayment.amount||e.amount||0);
+          const restored=Math.max(0,Number(loan.outstanding||0)+amount);
+          const status=restored>0?'Active':'Completed';
+          const upd=await supabaseClient.from('loans').update({outstanding:restored,status,updated_at:new Date().toISOString()}).eq('id',loan.id);
+          if(upd.error)throw new Error('Cashbook row and repayment were deleted, but loan balance update failed for loan '+loan.id+': '+upd.error.message+'. Check the outstanding balance before further posting.');
+        }
+      }
+      try{log('Hard delete cashbook transaction','Entry '+id+'; '+money(e.amount)+'; reason: '+reason.trim())}catch(_e){}
+      await refreshOnlineData();if(typeof renderAll==='function')renderAll();if(typeof renderCashBank==='function')renderCashBank();
+      showToast('Hard delete completed. The selected cashbook entry and linked ledger record(s) were processed.');
+    }catch(err){
+      console.error('MAZIMA hard delete error',err);
+      try{await refreshOnlineData();if(typeof renderAll==='function')renderAll();if(typeof renderCashBank==='function')renderCashBank()}catch(_refreshErr){}
+      showToast(err.message||'Hard delete failed. Refresh and inspect the affected ledger records.');
+    }
+  };
+
+  // Loan reconciliation is read-only: calculated figures are compared with recorded outstanding, never silently overwritten.
+  const priorRenderLoans=window.renderLoans;
+  window.renderLoans=function(){if(typeof priorRenderLoans==='function')priorRenderLoans();const panel=document.getElementById('loanMemberLedgerPanel');if(!panel||document.getElementById('loanReconcilePanel'))return;const h=document.createElement('div');h.id='loanReconcilePanel';h.className='panel';h.style.marginTop='14px';h.innerHTML='<h3>Loan Ledger Reconciliation</h3><p class="muted">Compare principal + approved interest less posted repayments (excluding reversals) with the recorded outstanding balance. This is a check only; it does not alter loan records.</p><div class="form" style="box-shadow:none;padding:0;align-items:end"><div class="field"><label>Loan</label><select id="reconLoanSelect"></select></div><div class="field"><label>Reconciliation date</label><input id="reconDate" type="date" value="'+isoLocalDate(new Date())+'"></div><div class="field full"><label>Reconciliation note</label><input id="reconNote" placeholder="Explain any difference / supporting documents"></div><div class="field full"><button class="btn blue" onclick="runLoanReconciliation()">Calculate Reconciliation</button> <button class="btn gray" onclick="printLoanReconciliation()">Print / Save PDF</button></div></div><div id="reconResult" class="statementHint">Select a loan and calculate to view the reconciliation.</div>';panel.appendChild(h);const sel=document.getElementById('reconLoanSelect');if(sel)sel.innerHTML=(db.loans||[]).filter(l=>l.status==='Active'||l.status==='Completed').map(l=>`<option value="${l.id}">${esc(memberName(l.memberId))} — ${esc(String(l.id).slice(0,12))} (${l.status})</option>`).join('');};
+  window.runLoanReconciliation=function(){const id=document.getElementById('reconLoanSelect')?.value,l=(db.loans||[]).find(x=>String(x.id)===String(id));if(!l)return showToast('Select an active or completed loan.');const reps=(l.repayments||[]).filter(r=>!r.reversed),paid=reps.reduce((a,r)=>a+Number(r.amount||0),0),principal=Number(l.original_amount||l.amount||0),interest=Number(l.interest||0),total=principal+interest,calculated=Math.max(0,total-paid),recorded=Number(l.outstanding||0),diff=recorded-calculated,el=document.getElementById('reconResult');const fmt=n=>money(Math.round(Number(n||0)*100)/100);if(el)el.innerHTML=`<b>Loan ledger reconciliation — ${esc(memberName(l.memberId))}</b><div class="reconGrid"><div class="reconCell"><small>Original / current principal</small><b>${fmt(principal)}</b></div><div class="reconCell"><small>Recorded interest</small><b>${fmt(interest)}</b></div><div class="reconCell"><small>Total due</small><b>${fmt(total)}</b></div><div class="reconCell"><small>Posted repayments (not reversed)</small><b>${fmt(paid)}</b></div><div class="reconCell"><small>Calculated outstanding</small><b>${fmt(calculated)}</b></div><div class="reconCell"><small>Recorded outstanding</small><b>${fmt(recorded)}</b></div></div><p><b>Difference (recorded − calculated):</b> <span style="color:${Math.abs(diff)<0.01?'#147b38':'#b51f1f'};font-weight:900">${fmt(diff)}</span> — ${Math.abs(diff)<0.01?'RECONCILED':'REVIEW REQUIRED'}</p><p><b>Loan status:</b> ${esc(l.status)} &nbsp; <b>Reconciliation date:</b> ${esc(document.getElementById('reconDate')?.value||'')}<br><b>Operator:</b> ${esc(onlineProfile?.full_name||onlineUser?.email||currentRole||'—')}<br><b>Notes:</b> ${esc(document.getElementById('reconNote')?.value||'—')}</p><small class="muted">No loan balance was changed. For rescheduled loans, verify the original/current principal basis and approved loan history before adjusting records.</small>`;window.__lastLoanRecon={loanId:id,html:el?.innerHTML||'',date:document.getElementById('reconDate')?.value||'',note:document.getElementById('reconNote')?.value||''};};
+  window.printLoanReconciliation=function(){if(!window.__lastLoanRecon)return showToast('Calculate the reconciliation first.');const w=window.open('','_blank');if(!w)return showToast('Allow pop-ups to print the reconciliation.');w.document.write('<html><head><title>MAZIMA Loan Reconciliation</title><style>body{font:13px Arial;padding:25px;color:#17313d}.reconGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.reconCell{border:1px solid #ccd9df;padding:10px;border-radius:8px}.reconCell small{display:block;color:#607d86}.reconCell b{display:block;margin-top:5px}</style></head><body><h1>MAZIMA CBS PEWOSA SSAMBWE</h1><h2>Loan Ledger Reconciliation</h2>'+window.__lastLoanRecon.html+'<p>Printed: '+new Date().toLocaleString()+'</p><script>window.onload=()=>setTimeout(()=>window.print(),200)<\/script></body></html>');w.document.close();};
+  // Keep the reconciliation selector current when loan lists change.
+  const oldRefresh=window.refreshOnlineData;
+  if(typeof oldRefresh==='function')window.refreshOnlineData=async function(){const r=await oldRefresh.apply(this,arguments);try{const s=document.getElementById('reconLoanSelect');if(s){const old=s.value;s.innerHTML=(db.loans||[]).filter(l=>l.status==='Active'||l.status==='Completed').map(l=>`<option value="${l.id}">${esc(memberName(l.memberId))} — ${esc(String(l.id).slice(0,12))} (${l.status})</option>`).join('');if((db.loans||[]).some(l=>String(l.id)===old))s.value=old}}catch(e){}return r};
+})();
+</script>
+
 </body>
 </html>
